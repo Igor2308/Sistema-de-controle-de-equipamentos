@@ -1,0 +1,56 @@
+/* Estilos exclusivos da tela de login: vitrine verde de um lado, formulário do outro */
+.pagina-login {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  background: var(--fundo);
+}
+
+.login-vitrine {
+  position: relative;
+  overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 56px clamp(28px, 6vw, 84px);
+  color: #e6f4ec;
+  background:
+    radial-gradient(circle at 85% 12%, rgba(95, 211, 160, .22) 0, rgba(95, 211, 160, 0) 38%),
+    radial-gradient(circle at 10% 92%, rgba(95, 211, 160, .16) 0, rgba(95, 211, 160, 0) 42%),
+    linear-gradient(160deg, #14412f 0%, #1e6f4f 100%);
+}
+.login-vitrine__logo { width: 54px; height: 54px; margin-bottom: 26px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%235fd3a0'/%3E%3Crect x='9' y='11' width='22' height='15' rx='2.5' fill='none' stroke='%2314412f' stroke-width='2.5'/%3E%3Cpath d='M14 31h12' stroke='%2314412f' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+.login-vitrine h2 { font-family: var(--fonte-titulo); font-size: clamp(1.6rem, 2.6vw, 2.2rem); line-height: 1.2; color: #fff; margin: 0 0 14px; }
+.login-vitrine__texto { margin: 0 0 28px; font-size: 1.05rem; max-width: 460px; color: #cfe5da; }
+.login-vitrine ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.login-vitrine li { display: flex; align-items: center; gap: 12px; }
+.login-vitrine li::before {
+  content: ""; flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(95, 211, 160, .22)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235fd3a0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E")
+    center / 14px no-repeat;
+}
+
+.login-area { display: grid; place-items: center; padding: 32px 16px; }
+.login {
+  width: min(420px, 100%);
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  padding: 36px 34px 30px;
+  box-shadow: 0 12px 34px rgba(20, 65, 47, .10);
+}
+.login__marca { display: none; }
+.login h1 { font-size: 1.45rem; text-align: center; margin-bottom: 22px; font-family: var(--fonte-texto); color: var(--primaria-escura); }
+.login__troca { text-align: center; margin: 20px 0 0; font-size: .92rem; }
+.login .link { font-weight: 700; }
+
+@media (max-width: 860px) {
+  .pagina-login { grid-template-columns: 1fr; }
+  .login-vitrine { padding: 26px 24px; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px 14px; }
+  .login-vitrine__logo { width: 42px; height: 42px; margin: 0; }
+  .login-vitrine h2 { margin: 0; font-size: 1.15rem; flex: 1; }
+  .login-vitrine__texto, .login-vitrine ul { display: none; }
+  .login-area { padding: 24px 16px 32px; align-items: start; }
+}
+@media (max-width: 480px) {
+  .login { padding: 28px 20px 24px; }
+}

@@ -1,0 +1,22 @@
+# ===== Servidor web / API =====
+fastapi==0.161.1
+uvicorn==0.54.0
+
+# ===== Banco de dados (MySQL) =====
+SQLAlchemy==2.1.6
+sqlmodel==0.0.48
+PyMySQL==1.2.3
+
+# ===== Validação e configuração (.env) =====
+pydantic==2.14.1
+pydantic-settings==2.16.1
+python-dotenv==1.2.4
+email-validator==2.3.0
+
+# ===== Autenticação =====
+PyJWT>=2.8.0            # import jwt (token de login)
+passlib>=1.7.4          # CryptContext (hash de senha)
+argon2-cffi>=23.1.0     # algoritmo argon2 usado pelo passlib
+
+# ===== Scripts de teste (testar_*.py) =====
+requests==2.34.2

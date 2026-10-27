@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel do administrador | Controle de Equipamentos de TI</title>
+  <link rel="stylesheet" href="/frontend/css/base.css?v=20261025b">
+  <link rel="stylesheet" href="/frontend/css/dashboard_administrador.css?v=20261025b">
+</head>
+<body class="protegido">
+  <div class="app">
+    <aside class="lateral">
+      <div class="lateral__marca">Controle de Equipamentos de TI</div>
+      <div class="lateral__rodape">
+        <span id="usuario-nome" class="lateral__usuario"></span>
+        <button type="button" class="lateral__sair" id="btn-sair">Sair do sistema</button>
+      </div>
+      <nav class="lateral__nav" aria-label="Principal">
+        <a href="#dashboard" data-secao-link="dashboard">Dashboard</a>
+        <a href="#equipamentos" data-secao-link="equipamentos">Equipamentos</a>
+        <a href="#usuarios" data-secao-link="usuarios">Usuários</a>
+      </nav>
+    </aside>
+
+    <main class="principal">
+      <div class="boas-vindas">
+        <p class="boas-vindas__texto" id="saudacao">Olá!</p>
+        <p class="boas-vindas__data" id="saudacao-data"></p>
+      </div>
+      <!-- Dashboard -->
+      <section data-secao="dashboard" hidden>
+        <div class="principal__topo"><h1>Dashboard</h1></div>
+        <div class="indicadores">
+          <div class="indicador indicador--slate">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5L12 21l9-4.5"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-total">-</strong><span>Total de equipamentos</span></div>
+          </div>
+          <div class="indicador indicador--verde">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-disponiveis">-</strong><span>Equipamentos disponíveis</span></div>
+          </div>
+          <div class="indicador indicador--azul">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h11l-3-3"/><path d="M17 17H6l3 3"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-emprestados">-</strong><span>Equipamentos emprestados</span></div>
+          </div>
+          <div class="indicador indicador--laranja">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-manutencao">-</strong><span>Em manutenção</span></div>
+          </div>
+          <div class="indicador indicador--verde">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-usuarios">-</strong><span>Usuários ativos</span></div>
+          </div>
+        </div>
+        <div class="duas-colunas">
+          <div class="bloco">
+            <h2>Equipamentos em manutenção</h2>
+            <div class="tabela-caixa tabela-janela"><table>
+              <thead><tr><th>Equipamento</th><th>Patrimônio</th><th>Ações</th></tr></thead>
+              <tbody id="tb-atencao"></tbody>
+            </table></div>
+            <nav class="paginacao" id="pag-atencao" aria-label="Paginação dos equipamentos em manutenção"></nav>
+          </div>
+          <div class="bloco">
+            <h2>Usuários por nível de acesso</h2>
+            <div class="tabela-caixa tabela-janela"><table>
+              <thead><tr><th>Nível</th><th>Usuários</th></tr></thead>
+              <tbody id="tb-niveis"></tbody>
+            </table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Equipamentos -->
+      <section data-secao="equipamentos" hidden>
+        <div class="principal__topo">
+          <h1>Equipamentos</h1>
+          <button type="button" class="botao botao--primario" id="btn-novo-equip">+ Novo equipamento</button>
+        </div>
+        <div class="filtros">
+          <div class="filtros__grupo" id="filtros-equip">
+            <button type="button" class="chip" data-filtro="todos" aria-pressed="true">Todos</button>
+            <button type="button" class="chip" data-filtro="disponivel" aria-pressed="false">Disponível</button>
+            <button type="button" class="chip" data-filtro="emprestado" aria-pressed="false">Emprestado</button>
+            <button type="button" class="chip" data-filtro="manutencao" aria-pressed="false">Manutenção</button>
+            <button type="button" class="chip" data-filtro="inativo" aria-pressed="false">Inativo</button>
+          </div>
+          <input id="busca-equip" class="busca" type="search" placeholder="Pesquisar equipamento..." aria-label="Pesquisar equipamento">
+        </div>
+        <div class="tabela-caixa"><table>
+          <thead id="th-equipamentos"><tr><th data-ordenar="id" data-direcao-inicial="desc">ID</th><th data-ordenar="nome">Nome</th><th data-ordenar="modelo">Modelo</th><th data-ordenar="patrimonio">Patrimônio</th><th data-ordenar="categoria">Categoria</th><th data-ordenar="status">Status</th><th>Ações</th></tr></thead>
+          <tbody id="tb-equipamentos"></tbody>
+        </table></div>
+        <nav class="paginacao" id="pag-equip" aria-label="Paginação de equipamentos"></nav>
+      </section>
+
+      <!-- Usuários -->
+      <section data-secao="usuarios" hidden>
+        <div class="principal__topo">
+          <h1>Usuários</h1>
+          <button type="button" class="botao botao--primario" id="btn-novo-usuario">+ Novo usuário</button>
+        </div>
+        <div class="filtros">
+          <input id="busca-usuario" class="busca" type="search" placeholder="Pesquisar usuário..." aria-label="Pesquisar usuário">
+        </div>
+        <div class="tabela-caixa"><table>
+          <thead id="th-usuarios"><tr><th data-ordenar="id">ID</th><th data-ordenar="nome">Nome</th><th data-ordenar="cpf">CPF</th><th data-ordenar="nivel">Nível de acesso</th><th data-ordenar="status">Status</th><th data-ordenar="criacao" data-direcao-inicial="desc">Criação</th><th>Ações</th></tr></thead>
+          <tbody id="tb-usuarios"></tbody>
+        </table></div>
+        <nav class="paginacao" id="pag-usuarios" aria-label="Paginação de usuários"></nav>
+      </section>
+    </main>
+  </div>
+
+  <!-- Cadastro / edição de equipamento -->
+  <dialog id="dlg-equip" class="modal modal--grande" aria-labelledby="dlg-equip-titulo">
+    <form id="form-equip" class="modal__corpo" novalidate>
+      <h2 id="dlg-equip-titulo"></h2>
+      <p id="eq-guia" class="mensagem mensagem--info" hidden>
+        Preencha os campos em ordem: cada campo é liberado quando o anterior estiver correto.
+      </p>
+      <div class="grade-campos">
+        <div class="campo">
+          <label for="eq-nome">Nome do equipamento</label>
+          <input id="eq-nome" type="text" maxlength="100" placeholder="Ex.: Notebook Dell Latitude" autocomplete="off" required>
+        </div>
+        <div class="campo">
+          <label for="eq-modelo">Modelo</label>
+          <input id="eq-modelo" type="text" maxlength="100" placeholder="Ex.: Latitude 3520" autocomplete="off" required>
+        </div>
+        <div class="campo">
+          <label for="eq-patrimonio">Número de patrimônio</label>
+          <input id="eq-patrimonio" type="text" maxlength="100" placeholder="PAT-XXXXX" autocomplete="off" required>
+        </div>
+        <div class="campo">
+          <label for="eq-categoria">Categoria</label>
+          <div class="campo__linha">
+            <select id="eq-categoria" required></select>
+            <button type="button" class="botao" id="btn-nova-categoria" title="Cadastrar uma categoria que ainda não existe">+ Nova categoria</button>
+          </div>
+        </div>
+        <div class="campo">
+          <label for="eq-status">Status</label>
+          <select id="eq-status"></select>
+          <span id="eq-status-ajuda" class="campo__ajuda" hidden>O status muda sozinho enquanto o equipamento estiver emprestado.</span>
+        </div>
+        <div class="campo campo--largo">
+          <label for="eq-descricao">Descrição <small>(opcional)</small></label>
+          <textarea id="eq-descricao" maxlength="100" placeholder="Especificações técnicas"></textarea>
+        </div>
+      </div>
+      <p id="msg-equip" class="mensagem mensagem--erro" role="alert" hidden></p>
+      <div class="modal__rodape">
+        <button type="button" class="botao" data-fechar>Cancelar</button>
+        <button type="submit" class="botao botao--primario" id="btn-salvar-equip">Salvar equipamento</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Nova categoria (aberta de dentro do cadastro de equipamento) -->
+  <dialog id="dlg-categoria" class="modal modal--pequeno" aria-labelledby="dlg-categoria-titulo">
+    <form id="form-categoria" class="modal__corpo" novalidate>
+      <h2 id="dlg-categoria-titulo">Nova categoria</h2>
+      <div class="campo">
+        <label for="cat-nome">Nome da categoria</label>
+        <input id="cat-nome" type="text" maxlength="50" placeholder="Ex.: Redes e Conectividade" autocomplete="off" required>
+      </div>
+      <p id="msg-categoria" class="mensagem mensagem--erro" role="alert" hidden></p>
+      <div class="modal__rodape">
+        <button type="button" class="botao" data-fechar>Cancelar</button>
+        <button type="submit" class="botao botao--primario" id="btn-salvar-categoria">Salvar categoria</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Detalhes do equipamento -->
+  <dialog id="dlg-detalhes-equip" class="modal" aria-labelledby="dlg-det-titulo">
+    <div class="modal__corpo">
+      <h2 id="dlg-det-titulo">Detalhes do equipamento</h2>
+      <dl id="det-equip" class="detalhes"></dl>
+      <div class="modal__rodape">
+        <button type="button" class="botao" data-fechar>Fechar</button>
+        <button type="button" class="botao botao--primario" id="btn-det-editar">Editar equipamento</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Cadastro / edição de usuário -->
+  <dialog id="dlg-usuario" class="modal" aria-labelledby="dlg-usuario-titulo">
+    <form id="form-usuario" class="modal__corpo" novalidate>
+      <h2 id="dlg-usuario-titulo"></h2>
+      <div class="grade-campos">
+        <div class="campo">
+          <label for="us-nome">Nome completo</label>
+          <input id="us-nome" type="text" maxlength="100" required>
+        </div>
+        <div class="campo">
+          <label for="us-email">E-mail</label>
+          <input id="us-email" type="email" maxlength="150" required>
+        </div>
+        <div class="campo">
+          <label for="us-cpf">CPF</label>
+          <input id="us-cpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required>
+          <span id="us-cpf-ajuda" class="campo__ajuda" hidden>O CPF não pode ser alterado por aqui.</span>
+        </div>
+        <div class="campo">
+          <label for="us-nivel">Nível de acesso</label>
+          <select id="us-nivel" required></select>
+        </div>
+        <div class="campo">
+          <label for="us-status">Status</label>
+          <select id="us-status">
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+        <div class="campo" id="campo-us-senha">
+          <label for="us-senha">Senha</label>
+          <input id="us-senha" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres">
+        </div>
+      </div>
+      <p id="msg-usuario" class="mensagem mensagem--erro" role="alert" hidden></p>
+      <div class="modal__rodape">
+        <button type="button" class="botao" data-fechar>Cancelar</button>
+        <button type="submit" class="botao botao--primario" id="btn-salvar-usuario">Salvar usuário</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/frontend/js/api.js?v=20261025b"></script>
+  <script src="/frontend/js/dashboard_administrador.js?v=20261025b"></script>
+</body>
+</html>

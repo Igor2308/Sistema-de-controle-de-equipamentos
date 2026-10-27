@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar | Controle de Equipamentos de TI</title>
+  <link rel="stylesheet" href="/frontend/css/base.css?v=20261025b">
+  <link rel="stylesheet" href="/frontend/css/login.css?v=20261025b">
+</head>
+<body class="pagina-login">
+  <aside class="login-vitrine" aria-label="Apresentação do sistema">
+    <div class="login-vitrine__logo" aria-hidden="true"></div>
+    <h2>Controle de Equipamentos de TI</h2>
+    <p class="login-vitrine__texto">Solicite, aprove e acompanhe os empréstimos de equipamentos em um só lugar.</p>
+    <ul>
+      <li>Solicitações e aprovações em poucos cliques</li>
+      <li>Controle de empréstimos e devoluções</li>
+      <li>Destaque para empréstimos em atraso</li>
+    </ul>
+  </aside>
+
+  <div class="login-area">
+  <main class="login">
+    <p class="login__marca">Controle de Equipamentos de TI</p>
+
+    <section id="painel-entrar" aria-labelledby="titulo-entrar">
+      <h1 id="titulo-entrar">Acessar sua conta</h1>
+      <p id="aviso-motivo" class="mensagem mensagem--info" hidden></p>
+      <p id="msg-sucesso" class="mensagem mensagem--ok" role="status" hidden></p>
+
+      <form id="form-login" novalidate>
+        <div class="campo">
+          <label for="login-email">E-mail</label>
+          <input id="login-email" name="email" type="email" autocomplete="username" placeholder="Digite seu e-mail" required>
+        </div>
+        <div class="campo">
+          <label for="login-senha">Senha</label>
+          <input id="login-senha" name="senha" type="password" autocomplete="current-password" placeholder="Digite sua senha" required>
+        </div>
+        <p id="msg-login" class="mensagem mensagem--erro" role="alert" hidden></p>
+        <button id="btn-entrar" type="submit" class="botao botao--primario botao--cheio">Entrar</button>
+      </form>
+
+      <p class="login__troca">Não possui uma conta? <button type="button" class="link" id="ir-criar">Criar conta</button></p>
+    </section>
+
+    <section id="painel-criar" aria-labelledby="titulo-criar" hidden>
+      <h1 id="titulo-criar">Criar sua conta</h1>
+
+      <form id="form-criar" novalidate>
+        <div class="campo">
+          <label for="criar-nome">Nome completo</label>
+          <input id="criar-nome" type="text" autocomplete="name" maxlength="100" placeholder="Seu nome" required>
+        </div>
+        <div class="campo">
+          <label for="criar-email">E-mail</label>
+          <input id="criar-email" type="email" autocomplete="email" maxlength="150" placeholder="Seu e-mail" required>
+        </div>
+        <div class="campo">
+          <label for="criar-cpf">CPF</label>
+          <input id="criar-cpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required>
+        </div>
+        <div class="campo">
+          <label for="criar-senha">Senha</label>
+          <input id="criar-senha" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" required>
+        </div>
+        <div class="campo">
+          <label for="criar-senha2">Confirmar senha</label>
+          <input id="criar-senha2" type="password" autocomplete="new-password" placeholder="Confirme sua senha" required>
+        </div>
+        <p id="msg-criar" class="mensagem mensagem--erro" role="alert" hidden></p>
+        <button id="btn-criar" type="submit" class="botao botao--primario botao--cheio">Criar conta</button>
+      </form>
+
+      <p class="login__troca">Já possui uma conta? <button type="button" class="link" id="ir-entrar">Entrar</button></p>
+    </section>
+  </main>
+  </div>
+
+  <script src="/frontend/js/api.js?v=20261025b"></script>
+  <script src="/frontend/js/login.js?v=20261025b"></script>
+</body>
+</html>

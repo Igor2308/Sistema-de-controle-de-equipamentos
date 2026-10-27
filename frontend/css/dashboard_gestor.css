@@ -1,0 +1,9 @@
+/* Estilos exclusivos do painel do gestor */
+.subtitulo { color: var(--primaria-escura); margin: 4px 0 12px; font-family: var(--fonte-titulo); }
+#bloco-devolucao { border-top: 1px solid var(--borda); padding-top: 14px; }
+.tabela-caixa td .botao + .botao { margin-left: 6px; }
+.tabela-caixa table { min-width: 560px; }
+/* Tabelas largas do gestor: espaçamento menor para a coluna Ações caber sem rolar */
+#tb-emprestimos td, #th-emprestimos th,
+#tb-solicitacoes td, #th-solicitacoes th { padding-left: 7px; padding-right: 7px; }
+#tb-emprestimos td .botao + .botao { margin-left: 4px; }

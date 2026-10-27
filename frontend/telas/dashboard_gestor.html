@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel do gestor | Controle de Equipamentos de TI</title>
+  <link rel="stylesheet" href="/frontend/css/base.css?v=20261025b">
+  <link rel="stylesheet" href="/frontend/css/dashboard_gestor.css?v=20261025b">
+</head>
+<body class="protegido">
+  <div class="app">
+    <aside class="lateral">
+      <div class="lateral__marca">Controle de Equipamentos de TI</div>
+      <div class="lateral__rodape">
+        <span id="usuario-nome" class="lateral__usuario"></span>
+        <button type="button" class="lateral__sair" id="btn-sair">Sair do sistema</button>
+      </div>
+      <nav class="lateral__nav" aria-label="Principal">
+        <a href="#dashboard" data-secao-link="dashboard">Dashboard</a>
+        <a href="#solicitacoes" data-secao-link="solicitacoes">Solicitações</a>
+        <a href="#emprestimos" data-secao-link="emprestimos">Empréstimos</a>
+      </nav>
+    </aside>
+
+    <main class="principal">
+      <div class="boas-vindas">
+        <p class="boas-vindas__texto" id="saudacao">Olá!</p>
+        <p class="boas-vindas__data" id="saudacao-data"></p>
+      </div>
+      <!-- Dashboard -->
+      <section data-secao="dashboard" hidden>
+        <div class="principal__topo"><h1>Dashboard</h1></div>
+        <div class="indicadores">
+          <div class="indicador indicador--slate">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5L12 21l9-4.5"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-total">-</strong><span>Total de equipamentos</span></div>
+          </div>
+          <div class="indicador indicador--verde">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-disponiveis">-</strong><span>Equipamentos disponíveis</span></div>
+          </div>
+          <div class="indicador indicador--azul">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h11l-3-3"/><path d="M17 17H6l3 3"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-emprestados">-</strong><span>Equipamentos emprestados</span></div>
+          </div>
+          <div class="indicador indicador--laranja">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-manutencao">-</strong><span>Em manutenção</span></div>
+          </div>
+          <div class="indicador indicador--ambar">
+            <span class="indicador__icone"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <div class="indicador__texto"><strong id="ind-pendentes">-</strong><span>Solicitações pendentes</span></div>
+          </div>
+        </div>
+        <div class="duas-colunas">
+          <div class="bloco">
+            <h2>Solicitações recentes</h2>
+            <div class="tabela-caixa"><table>
+              <thead><tr><th>Nº</th><th>Solicitante</th><th>Situação</th></tr></thead>
+              <tbody id="tb-recentes"></tbody>
+            </table></div>
+          </div>
+          <div class="bloco">
+            <h2>Empréstimos ativos</h2>
+            <div class="tabela-caixa"><table>
+              <thead><tr><th>Usuário</th><th>Equipamento</th><th>Devolução</th></tr></thead>
+              <tbody id="tb-ativos"></tbody>
+            </table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Solicitações -->
+      <section data-secao="solicitacoes" hidden>
+        <div class="principal__topo"><h1>Solicitações</h1></div>
+        <div class="filtros">
+          <label for="filtro-situacao"><strong>Situação:</strong></label>
+          <select id="filtro-situacao" class="busca">
+            <option value="">Todas</option>
+            <option value="pendente">Pendentes</option>
+            <option value="aprovado">Aprovadas</option>
+            <option value="recusado">Recusadas</option>
+          </select>
+        </div>
+        <div class="tabela-caixa"><table>
+          <thead id="th-solicitacoes"><tr><th data-ordenar="id" data-direcao-inicial="desc">Nº</th><th data-ordenar="solicitante">Solicitante</th><th data-ordenar="equipamento">Equipamento</th><th data-ordenar="solicitada" data-direcao-inicial="desc">Solicitada em</th><th data-ordenar="retirada" data-direcao-inicial="desc">Retirada</th><th data-ordenar="situacao">Situação</th><th data-ordenar="autorizador">Autorizador</th><th>Ações</th></tr></thead>
+          <tbody id="tb-solicitacoes"></tbody>
+        </table></div>
+        <nav class="paginacao" id="pag-solic" aria-label="Paginação das solicitações"></nav>
+      </section>
+
+      <!-- Empréstimos -->
+      <section data-secao="emprestimos" hidden>
+        <div class="principal__topo"><h1>Empréstimos</h1></div>
+        <div class="filtros">
+          <div class="filtros__grupo" id="filtros-emprestimo">
+            <button type="button" class="chip" data-filtro="todos" aria-pressed="true">Todos</button>
+            <button type="button" class="chip" data-filtro="ativo" aria-pressed="false">Ativos</button>
+            <button type="button" class="chip" data-filtro="devolvido" aria-pressed="false">Devolvidos</button>
+            <button type="button" class="chip" data-filtro="atrasado" aria-pressed="false">Atrasados</button>
+          </div>
+        </div>
+        <div class="tabela-caixa"><table>
+          <thead id="th-emprestimos"><tr><th data-ordenar="id" data-direcao-inicial="desc">Nº</th><th data-ordenar="usuario">Usuário</th><th data-ordenar="equipamento">Equipamento</th><th data-ordenar="patrimonio">Patrimônio</th><th data-ordenar="retirada" data-direcao-inicial="desc">Retirada</th><th data-ordenar="prevista" data-direcao-inicial="desc">Devol. prevista</th><th data-ordenar="devolvido" data-direcao-inicial="desc">Devolvido</th><th data-ordenar="status">Status</th><th>Ações</th></tr></thead>
+          <tbody id="tb-emprestimos"></tbody>
+        </table></div>
+        <nav class="paginacao" id="pag-empr" aria-label="Paginação dos empréstimos"></nav>
+      </section>
+    </main>
+  </div>
+
+  <!-- Análise de solicitação -->
+  <dialog id="dlg-solicitacao" class="modal" aria-labelledby="dlg-solic-titulo">
+    <form id="form-analise" class="modal__corpo" novalidate>
+      <h2 id="dlg-solic-titulo"></h2>
+      <dl id="solic-detalhes" class="detalhes"></dl>
+      <div id="bloco-analise">
+        <div class="campo">
+          <label for="analise-obs">Observação do responsável</label>
+          <textarea id="analise-obs" maxlength="200" placeholder="Motivo da aprovação ou recusa..."></textarea>
+          <span class="campo__ajuda">Obrigatória ao recusar.</span>
+        </div>
+      </div>
+      <p id="msg-analise" class="mensagem mensagem--erro" role="alert" hidden></p>
+      <div class="modal__rodape">
+        <button type="button" class="botao" data-fechar>Fechar</button>
+        <button type="button" class="botao botao--perigo" id="btn-recusar">Recusar solicitação</button>
+        <button type="button" class="botao botao--sucesso" id="btn-aprovar">Aprovar solicitação</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Detalhes do empréstimo e devolução -->
+  <dialog id="dlg-emprestimo" class="modal" aria-labelledby="dlg-empr-titulo">
+    <form id="form-devolucao" class="modal__corpo" novalidate>
+      <h2 id="dlg-empr-titulo"></h2>
+      <dl id="empr-detalhes" class="detalhes"></dl>
+      <div id="bloco-devolucao">
+        <h2 class="subtitulo">Registrar devolução</h2>
+        <div class="campo">
+          <label for="devolucao-data">Data de devolução</label>
+          <input id="devolucao-data" type="date" required>
+          <span id="devolucao-data-ajuda" class="campo__ajuda"></span>
+        </div>
+        <div class="campo">
+          <label for="devolucao-obs">Observações</label>
+          <textarea id="devolucao-obs" maxlength="150" placeholder="Condições do equipamento, acessórios devolvidos, etc."></textarea>
+        </div>
+      </div>
+      <p id="msg-devolucao" class="mensagem mensagem--erro" role="alert" hidden></p>
+      <div class="modal__rodape">
+        <button type="button" class="botao" data-fechar>Fechar</button>
+        <button type="submit" class="botao botao--primario" id="btn-devolver">Registrar devolução</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/frontend/js/api.js?v=20261025b"></script>
+  <script src="/frontend/js/dashboard_gestor.js?v=20261025b"></script>
+</body>
+</html>
