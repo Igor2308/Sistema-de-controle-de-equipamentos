@@ -1,10 +1,12 @@
-from pathlib import Path
+import traceback
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from config.Config import settings
 
 from routes.nivel_acesso_routes import nivel_acesso_router
 from routes.categoria_equipamento_routes import categoria_equipamento_router
@@ -15,19 +17,23 @@ from routes.solicitacao_routes import solicitacao_router
 from routes.emprestimo_routes import emprestimo_router
 from routes.auth_routes import auth_routes
 
-app = FastAPI()
+app = FastAPI(title="Controle de Equipamentos de TI - API")
 
 
-# Faz o navegador conferir com o servidor a cada abertura de tela.
-# Sem isso ele pode reaproveitar um .js/.css antigo e a tela fica branca.
-@app.middleware("http")
-async def sem_cache_no_frontend(request: Request, call_next):
-    resposta = await call_next(request)
+# ====== CORS ======
+# O front-end roda em outro endereço (ex.: Live Server na porta 5500) e o FastAPI (porta 8000)
+# cuida somente dos dados. O navegador só deixa a página chamar a API se ela estiver nesta lista.
+ORIGENS_PERMITIDAS = [
+    origem.strip() for origem in settings.CORS_ORIGENS.split(",") if origem.strip()
+]
 
-    if request.url.path.startswith("/frontend"):
-        resposta.headers["Cache-Control"] = "no-cache"
-
-    return resposta
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ORIGENS_PERMITIDAS,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
+    allow_credentials=False,   # o login usa token no cabeçalho, não cookies
+)
 
 
 # ====== Mensagens de erro em português ======
@@ -145,18 +151,31 @@ app.include_router(emprestimo_router)
 app.include_router(auth_routes)
 
 
-# ====== Front-end ======
-# As páginas ficam em /frontend e não colidem com os endpoints da API
-PASTA_FRONTEND = Path(__file__).resolve().parent / "frontend"
+# ====== Erro inesperado (500) ======
+# Erros 500 passam por fora do CORS; sem isto o navegador mostraria "erro de CORS"
+# em vez de uma mensagem. O erro completo continua aparecendo no terminal.
+@app.exception_handler(Exception)
+async def erro_inesperado(request: Request, exc: Exception):
+    traceback.print_exception(type(exc), exc, exc.__traceback__)
 
-app.mount(
-    "/frontend",
-    StaticFiles(directory=PASTA_FRONTEND, html=True),
-    name="frontend"
-)
+    resposta = JSONResponse(
+        status_code=500,
+        content={"detail": "Erro interno do servidor. Tente novamente."}
+    )
+
+    origem = request.headers.get("origin")
+
+    if origem in ORIGENS_PERMITIDAS:
+        resposta.headers["Access-Control-Allow-Origin"] = origem
+        resposta.headers["Vary"] = "Origin"
+
+    return resposta
 
 
-# Abrir http://127.0.0.1:8000/ leva direto para o login
+# A porta da API entrega somente dados; as páginas ficam no servidor do front-end
 @app.get("/", include_in_schema=False)
-def pagina_inicial():
-    return RedirectResponse(url="/frontend/telas/login.html")
+def raiz():
+    return {
+        "mensagem": "API do Controle de Equipamentos de TI em execução.",
+        "documentacao": "/docs"
+    }

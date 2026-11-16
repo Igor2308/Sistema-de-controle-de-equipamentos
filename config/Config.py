@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     JWT_REFRESH_EXPIRE_DAYS: int = 7
     JWT_ISSUER: str = "sistema-emprestimo"
 
+    # Endereços das páginas (Live Server etc.) autorizados a chamar a API, separados por vírgula
+    CORS_ORIGENS: str = "http://127.0.0.1:5500,http://localhost:5500"
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 #Variável que armazena os valores lidos do arquivo .env
 settings = Settings()

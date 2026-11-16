@@ -1,7 +1,11 @@
 /* ===== Funções compartilhadas pelas telas (sessão, API, utilitários) ===== */
+import { API_BASE } from "./utils.js";
+
 (function () {
   const CHAVE_TOKEN = "token_acesso";
-  const BASE_TELAS = "/frontend/telas/";
+  // As telas ficam todas na mesma pasta, então os links entre elas são relativos
+  // (funciona em qualquer servidor/porta, inclusive no Live Server)
+  const BASE_TELAS = "";
 
   // Nomes dos perfis exatamente como o backend devolve em /auth/me
   const TELA_POR_PERFIL = {
@@ -56,7 +60,7 @@
 
     let resposta;
     try {
-      resposta = await fetch(caminho, {
+      resposta = await fetch(API_BASE + caminho, {
         method: o.metodo || "GET",
         headers: cabecalhos,
         body: o.corpo !== undefined ? JSON.stringify(o.corpo) : undefined
@@ -123,7 +127,7 @@
   async function sair() {
     const token = Sessao.token();
     try {
-      await fetch("/auth/logout", { method: "POST", headers: token ? { Authorization: "Bearer " + token } : {} });
+      await fetch(API_BASE + "/auth/logout", { method: "POST", headers: token ? { Authorization: "Bearer " + token } : {} });
     } catch (e) { /* o logout é só do lado do cliente */ }
     irParaLogin();
   }

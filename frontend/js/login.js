@@ -1,4 +1,6 @@
 /* Tela de login e criação de conta */
+import { URL_LOGIN } from "./utils.js";
+
 (function () {
   const A = window.App;
 
@@ -85,7 +87,7 @@
     } catch (e) { /* token inválido: api() já limpou a sessão */ }
   }
 
-  formLogin.addEventListener("submit", async function (ev) {
+  formLogin.addEventListener("submit", function (ev) {
     ev.preventDefault();
     limparErro(msgLogin);
     const email = campoLoginEmail.value.trim();
@@ -96,16 +98,38 @@
 
     const botao = document.getElementById("btn-entrar");
     botao.disabled = true; botao.textContent = "Entrando...";
-    try {
-      const resp = await A.api("/auth/login", { metodo: "POST", corpo: { email: email, senha: senha }, semAuth: true });
-      A.Sessao.salvar(resp.access_token);
-      const usuario = await A.api("/auth/me");
-      document.getElementById("login-senha").value = "";
-      A.irParaTelaDoPerfil(usuario.roles);
-    } catch (e) {
-      mostrarErro(msgLogin, e.message);
-      botao.disabled = false; botao.textContent = "Entrar";
-    }
+
+    // Login com fetch: POST em /auth/login com { email, senha } (mesmos nomes de campos da API)
+    fetch(URL_LOGIN, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, senha: senha })
+    })
+      .then(function (response) {
+        // Lê o JSON também quando dá erro, para mostrar a mensagem enviada pela API
+        return response.json().catch(function () { return null; }).then(function (dados) {
+          if (!response.ok) {
+            throw new Error(dados && typeof dados.detail === "string"
+              ? dados.detail
+              : "Não foi possível entrar (erro " + response.status + ").");
+          }
+          return dados;
+        });
+      })
+      .then(function (data) {
+        // Guarda o token (só nesta aba) e descobre o perfil do usuário
+        A.Sessao.salvar(data.access_token);
+        return A.api("/auth/me");
+      })
+      .then(function (usuario) {
+        campoLoginSenha.value = "";
+        A.irParaTelaDoPerfil(usuario.roles);
+      })
+      .catch(function (erro) {
+        // TypeError = o navegador nem conseguiu falar com o servidor
+        mostrarErro(msgLogin, erro instanceof TypeError ? "Não foi possível conectar ao servidor." : erro.message);
+        botao.disabled = false; botao.textContent = "Entrar";
+      });
   });
 
   formCriar.addEventListener("submit", async function (ev) {
