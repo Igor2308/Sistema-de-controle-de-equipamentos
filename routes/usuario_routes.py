@@ -71,9 +71,9 @@ def cadastro_usuario(
 )
 def buscar_usuarios_route(
     db: Session = Depends(get_db),
-    usuario_atual: UsuarioAutenticado = Depends(
-        require_roles("Administrador")
-    )
+    ###usuario_atual: UsuarioAutenticado = Depends(
+       ### require_roles("Administrador")
+   # )
 ):
     try:
         return buscar_usuarios(db)
